@@ -1,0 +1,194 @@
+/* HERRAMIENTAS DEL CLIENTE AGREGADO*/
+
+.tools{
+    font-size: 15px;
+    cursor: pointer;
+    transition: all 300ms ease;
+
+}
+.tools:hover{
+    transform: scale(1.7);
+}
+
+
+.displayN{
+    display: none;
+}
+
+.contBoton{
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.contBotonMobil{
+    display: flex;
+    position: relative;
+    min-width: 70px;
+    flex-direction: column;
+    align-items: center;   
+}
+.contentDesk{
+ display: none;
+}
+
+.btnDiseñoDesk{
+   cursor: pointer;
+   transition: all ease 300ms;
+}
+
+.btnDiseñoDesk:hover{
+    background: rgb(153, 153, 153);
+    transform: scale(1.1);
+    border-radius: 10px;
+
+}
+
+.btnCreditsUser{
+    position: absolute;
+    display: flex;
+    flex-direction: column;
+    margin-top: 30px;
+    align-items: center;
+    gap: 20px;
+    transition: all 300ms ease;
+    z-index: 1;
+    background: rgba(245, 245, 245, 0.073);
+    backdrop-filter:blur(4px);
+    border-radius: 10px;
+
+   
+}
+
+/* configuracion botones */
+/*.historial{
+    display: flex;
+}
+*/
+.valorCred{
+    width: 10%;
+}
+
+.btnDiseño{
+    width: 60px;
+    height: 60px;
+    border-radius: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all ease 200ms;
+   
+}
+
+.btnDiseñoI{
+    
+    width: 20px;
+    height: 20px;
+}
+.btnDiseño:hover{
+    cursor: pointer;
+    box-shadow: rgba(92, 22, 22, 0.646) 0px 4px 8px 1px ;
+    transform: scale(1.2);
+  
+}
+
+.esconderbtnUser{
+   height: 0px;
+   overflow: hidden;
+   transition: all 300ms ease;
+}
+
+.contTable .botoneshis:hover, .btnGlob:hover, .delet:hover{
+    background: crimson;
+    border-radius: 10px;
+    transform: scale(1.1);  
+    cursor: pointer;
+    transition: all 100ms ease;
+    
+}
+
+.contTable .botoneshisEdit:hover, .sumar:hover{
+    background:mediumseagreen;
+    border-radius: 10px;
+    transform: scale(1.1);  
+    cursor: pointer;
+    transition: all 100ms ease;
+    
+}
+
+.historial:hover{
+    background:rgb(117, 117, 210);
+    border-radius: 10px;
+    transform: scale(1.1);  
+    cursor: pointer;
+    transition: all 100ms ease;
+    
+}
+
+.abonar:hover{
+    background:rgb(90, 179, 60);
+    border-radius: 10px;
+    transform: scale(1.1);  
+    cursor: pointer;
+    transition: all 100ms ease;
+}
+
+
+
+@media (max-width: 700px) {
+   
+    .historial:hover{
+    box-shadow: rgba(92, 22, 22, 0.646) 0px 4px 8px 1px ;
+    width: 100%;
+    height: 100%;
+    border-radius: 10px;
+    padding: 10px;
+    cursor: pointer;
+    
+
+}
+}
+
+/* menu historial config */
+
+.contentHistory{
+    position: absolute;
+    width: 80%;
+    height: 350px;
+    padding: 10px;
+    margin: auto;
+    top: 40%;
+    background-color: white;
+    display: flex;
+    gap: 20px;
+    box-shadow: rgba(0, 0, 0, 0.216) 0px 5px 16px 5px ;
+}
+.contTable thead tr{
+    border: none;
+    background-color: rgb(255, 255, 255);
+}
+
+.contTable tbody tr td{
+    border: none;
+    background-color:white;
+}
+
+.contTable table thead tr th{
+    border: none;
+}
+
+
+
+/* con figuracion tabla */
+.contTable{
+    overflow-y: hidden;
+}
+
+
+.contTable tbody tr td{
+padding-bottom: 10px;
+}
+
+.closeRecord{
+    display: none;
+}
