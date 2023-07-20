@@ -9,6 +9,9 @@ import { Filtro } from "./filtro";
 import { EditProduct } from "./editProduct";
 import { BarInfo } from "./barraInfo";
 import { Separador } from "../../toolsDev/separacion";
+import { arrayConverter } from "../../toolsDev/arrayConverter";
+import { Pages } from "../creditos/components/compontsRecord/paginacion";
+import { Search } from "./browser";
 
 // eslint-disable-next-line react/prop-types
 export const ContentComponents=()=>{
@@ -19,9 +22,10 @@ export const ContentComponents=()=>{
     const [data, setData] = useState([]);
     const [hay, setHay]=useState(false);
     const [filtro, setFiltro]=useState(false);
-    const [buscarProd, setBuscarProd]=useState("");
     const [editModal, setEditModal]=useState(false);
     const [ProductToEdit, setProductToEdit]=useState({});
+    const [paginas, setPaginas]= useState([]);
+    const [getpage, setGetPage]= useState(1);
 
 
     // eslint-disable-next-line no-undef
@@ -39,13 +43,15 @@ export const ContentComponents=()=>{
 
     //get data to api
     useEffect(()=>{
+        
         getApi();
-    },[]);
+    },[getpage]);
    async function getApi(){
     try {
         await axios.get("http://localhost:2000/getproducts",)
         .then(res=>{
-            setData(res.data.data);       
+            setData(res.data.data);  
+            setPaginas(arrayConverter(res.data.paginas.paginas < 2 && 1));   
         });
     } catch (error) {
         enqueueSnackbar(error, {variant:"error"})
@@ -130,32 +136,6 @@ async function deleteProduct(producto){
             }
           },[data]);
           
-          useEffect(()=>{
-            if (buscarProd.length < 1 ) {
-                getApi();
-            }
-          },[buscarProd])
-          //// buscar producto
-
-          async function buscador(){
-            try {
-                await axios.get(`http://localhost:2000/getproducts/buscar/${buscarProd}`)
-                .then(res=>{
-                    console.log(res.data.success)
-                    if (res.data.success) {
-                        setData(res.data.data);
-                        enqueueSnackbar(`se encontro ${res.data.data[0].nombre}`,{variant:"info"});
-                        
-                    } else {
-                        enqueueSnackbar(`no se encontro ${buscarProd}`,{variant:"error"});
-                    }
-                    
-
-                })
-            } catch (error) {
-                enqueueSnackbar(error, {variant:"error"})
-
-          }}
 
           /// filtrar producto 
          async function filtrarProduct(e){
@@ -197,11 +177,7 @@ async function deleteProduct(producto){
                    <FontAwesomeIcon icon={faMagnifyingGlass} className={windowWidth >= 700?'esconderIcono':'imgOptionsSearch'} onClick={()=>!esconder&&setEsconder(true)}/>
                 <div className={esconder?"searchOptionsNav":"searchOptionsNav translateSearch"}>
                     <FontAwesomeIcon  icon={faArrowRight} className={windowWidth >= 700?'esconderIcono':'mostrarFlecha'} onClick={()=>esconder&&setEsconder(false)}/>
-
-                    <form action="" className="">
-                        <input onChange={(e)=>setBuscarProd(e.target.value)} className="form-control form-control-sm mb-5 mt-5 buscador" type="search" name="buscadorOptionsNav" id="buscadorOptionsNav"/>
-                        <input onClick={buscador} className="btn btn-dark btn-sm mb-5 mt-5" type="button" value="buscar"/>
-                    </form>
+                    <Search getApi={getApi} setData={setData} />
                 </div>
             </div>
             <div className="addProducts">
@@ -241,6 +217,7 @@ async function deleteProduct(producto){
                  {/* bar of Information*/}
                 
         </div> 
+        <Pages setGetPage={setGetPage} paginas={paginas}/>
          <BarInfo data={data}/>
         </>
     );

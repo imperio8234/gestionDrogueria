@@ -10,7 +10,7 @@ import { Home } from './componentes/home/home';
 
 function App() {
   const [login, setLogin]=useState(false);
-// funcion usuario logeado o no logueado 
+// funcion usuario logueado o no logueado 
   return (
   <div className='app'>
     {login?<Main></Main>:<Home />}    

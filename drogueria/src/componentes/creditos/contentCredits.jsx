@@ -10,26 +10,37 @@ import {ClientToolsDesk} from "./components/clientToolsDesk";
 import "../../css/home/creditos.css/creditos.css";
 import { Historial } from "./components/historial";
 import { Filtro } from "./components/filtroCredit";
-import { EditProduct } from "./components/editProductCredit";
+import { EditCustomer } from "./components/editCustomerCredit";
+import { AddRecord } from "./components/compontsRecord/addRecord";
+import { SubstractRecord } from "./components/compontsRecord/subtractRecord";
+import { Pages } from "./components/compontsRecord/paginacion";
+import { BarInfo } from "./components/compontsRecord/infoBarr";
+import { arrayConverter } from "../../toolsDev/arrayConverter";
+import { Search } from "./components/browser";
+
 //import { BarInfo } from "./barraInfo";
 //import { Separador } from "../../toolsDev/separacion";
 
 // eslint-disable-next-line react/prop-types
 export const ContentCredits=()=>{
     //esconder menu de opciones
-    const [esconder, setEsconder]=useState(false);
-    const [seeModal, setSeeModal]=useState(false);
+    const [esconder, setEsconder] = useState(false);
+    const [seeModal, setSeeModal] = useState(false);
     const [windowWidth, setWindowWidth] = useState(window.innerWidth);
     const [data, setData] = useState([]);
-    const [hay, setHay]=useState(false);
-    const [filtro, setFiltro]=useState(false);
-    const [buscarProd, setBuscarProd]=useState("");
-    const [editModal, setEditModal]=useState(false);
-    const [ProductToEdit, setProductToEdit]=useState({});
-   // const [contToolsUser, setContToolsUser]=useState(false);
-    const [elementoSeleccionado, setElementoSeleccionado]=useState(null);
-    const [showRecord, setShowRecord]=useState(false);
-    const[sendNameRecord, setSendNameRecord]=useState();
+    const [hay, setHay] = useState(false);
+    const [filtro, setFiltro] = useState(false);
+    const [editModal, setEditModal] = useState(false);
+    const [customerEdit, setcustomerEdit] = useState({});
+    const [elementoSeleccionado, setElementoSeleccionado] = useState();
+    const [showRecord, setShowRecord] = useState(false);
+    const[sendNameRecord, setSendNameRecord] = useState();
+    const [idCredito, setIdCredito] = useState("");
+    const [showAddRecord, setShowAddRecord]= useState(false);
+    const [showSubstractRecord, setShowSubstractRecord]= useState(false);
+    const [paginas, setPaginas]= useState([]);
+    const [getpage, setGetPage]= useState(1);
+
 
     // eslint-disable-next-line no-undef
 
@@ -52,68 +63,54 @@ export const ContentCredits=()=>{
     //get data to api
     useEffect(()=>{
         getApi();
-    },[]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    },[getpage]);
+
+
    async function getApi(){
     try {
-        await axios.get("http://localhost:2000/getproducts",)
-        .then(res=>{
-            setData(res.data.data);       
+        await axios.get(`http://localhost:2000/api/v1/creditos/1/${getpage}`,)
+        .then(res=>{             
+            if (res.data.success) {
+              setData(res.data.data.data);
+              setPaginas(arrayConverter(res.data.paginas.paginas < 2 && 1));
+            } else {
+             enqueueSnackbar(res.data.message, {variant: "error"})
+            }     
         });
     } catch (error) {
         enqueueSnackbar(error, {variant:"error"})
         
     }
-        
-
    }
-   
-   //delete product and edit product or show record 
 
-   function deleteOredit(e){
-    console.log()
-    if(e.target.parentNode.parentNode.classList.contains("delet")){ 
-           //nombre del producto
-           const nombre=e.target
-       .parentNode
-       .parentNode
-       .parentNode
-       .parentNode
-       .parentNode
-       .parentNode
-       .querySelector(".texto")
-       .textContent;
-
+   //delete product and edit product show record addRecord controller
+   function handlerClick(e, id_credito){
+    const id = windowWidth < 700?elementoSeleccionado : id_credito
+    const customerToEdit= data.find(obj => obj.id_credito ===  id);
+    if(e == "delet"){ 
+      // eliminar producto
         Swal.fire({
-            title:"desea eliminar el producto",
+            title:`desea eliminar a ${customerToEdit.nombre}`,
             icon:"warning",
             showCancelButton:true,
             confirmButtonColor:'#3085d6',
             cancelButtonColor:'#d33',
-            confirmButtonText:'eliminar producto'
+            confirmButtonText:'eliminar cliente'
         }).then(res=>{
             if (res.isConfirmed) {
-                //delete product
-                deleteProduct(nombre);
+
+              //delete product
+                deleteProduct(customerToEdit.nombre);
             }
-        });     
-   }else if(e.target.parentNode.parentNode.classList.contains("edit") ){
-    // names of the date to change  
-    const nombre=e.target.parentNode.parentNode.parentNode.cells[1].textContent;
-    const unidades=e.target.parentNode.parentNode.parentNode.cells[0].textContent;
-    const laboratorio=e.target.parentNode.parentNode.parentNode.cells[2].textContent;
-    const costo=e.target.parentNode.parentNode.parentNode.cells[3].textContent;
-    const precio=e.target.parentNode.parentNode.parentNode.cells[4].textContent;
-    //object
-    const ProductToEdit={
-        nombre:nombre,
-        unidades:unidades,
-        laboratorio:laboratorio,
-        costo:costo,
-        precio:precio
-    }
-    //insert object to component
-      setProductToEdit(ProductToEdit)
-    //Show modal
+        }); 
+        
+   }else if(e == "edit"){    
+     // names of the date to change  
+          setcustomerEdit(customerToEdit);
+          setIdCredito(id);
+
+          //Show modal
       if (editModal) {
         setEditModal(false);
       }else{
@@ -121,36 +118,58 @@ export const ContentCredits=()=>{
       }
 
       // events record      
-   }else if(e.target.classList.contains("historial")){
+   }else if(e == "Historial"){
     showRecord?setShowRecord(false):setShowRecord(true);
-    setSendNameRecord(e.target.parentNode.cells[1].textContent);
-    
+    !showRecord && setShowAddRecord(false), setShowSubstractRecord(false);
+   
+    // datos del cliente registrado 
+    setIdCredito(id);
+    setSendNameRecord(customerToEdit.nombre);
 
+   }else if (e == "sumar") {
+
+    // addrecordcomponent
+    showAddRecord?setShowAddRecord(false):setShowAddRecord(true);
+    !showAddRecord && setShowRecord(false), setShowSubstractRecord(false);
+    
+    setSendNameRecord(customerToEdit.nombre);
+    setIdCredito(id);
+   }else if(e == "abonar") {
+    showSubstractRecord?setShowSubstractRecord(false): setShowSubstractRecord(true);
+
+    !showSubstractRecord && setShowRecord(false), setShowAddRecord(false)
+   } else {
+    console.log("no hay botones que coincidan")
    }
+   
   }
   
-  //////////
   //mostrar menu de botones del usuario registrado 
-
-  function  showBtn(index){
+  function  showBtn(index, accion){
+    
+    
+    handlerClick(accion, index)
     setElementoSeleccionado(index)
    if (elementoSeleccionado) {
     setElementoSeleccionado(null)
    }
   }
+
+
 //request api delete
-async function deleteProduct(producto){
-    
+async function deleteProduct(cliente){
     try {
-        axios.delete(`http://localhost:2000/deleteproduct/${producto}`)
+        axios.delete(`http://localhost:2000/deletecustomer/${cliente}`)
         .then(res=>{
             if(res.data.success){
-                enqueueSnackbar("se elimino correctamente",{variant:"success"})
+                enqueueSnackbar(`se elimino a ${cliente} correctamente`,{variant:"success"})
                 getApi();
+            } else {
+                enqueueSnackbar( `${res.data.message} no se puede elimiar`,{variant:"info"});
             }
         });
     } catch (err) {
-       enqueueSnackbar(err,{variant:"error"})
+       enqueueSnackbar(err,{variant:"error"});
     }
   }
   
@@ -163,33 +182,6 @@ async function deleteProduct(producto){
                 setHay(true);
             }
           },[data]);
-          
-          useEffect(()=>{
-            if (buscarProd.length < 1 ) {
-                getApi();
-            }
-          },[buscarProd])
-          //// buscar producto
-
-          async function buscador(){
-            try {
-                await axios.get(`http://localhost:2000/getproducts/buscar/${buscarProd}`)
-                .then(res=>{
-                    console.log(res.data.success)
-                    if (res.data.success) {
-                        setData(res.data.data);
-                        enqueueSnackbar(`se encontro ${res.data.data[0].nombre}`,{variant:"info"});
-                        
-                    } else {
-                        enqueueSnackbar(`no se encontro ${buscarProd}`,{variant:"error"});
-                    }
-                    
-
-                })
-            } catch (error) {
-                enqueueSnackbar(error, {variant:"error"})
-
-          }}
 
           /// filtrar producto 
          async function filtrarProduct(e){
@@ -198,94 +190,103 @@ async function deleteProduct(producto){
                 await axios.get(`http://localhost:2000/getproducts/filtro/${product}`)
                 .then(res =>{
                     if (res.data.success) {
-                        setData(res.data.data)
-                        enqueueSnackbar("productos encontrados", {variant:"success"})
+                        setData(res.data.data);
+                        enqueueSnackbar("se encontro el cliente", {variant:"success"})
                     }else{
-                        enqueueSnackbar("no se encontro ningun producto",{variant:"info"})
+                        enqueueSnackbar("no se encontro ningun cliente",{variant:"info"});
                     }
                 })
               } catch (error) {
-                enqueueSnackbar(error, {variant:"error"})
+                enqueueSnackbar(error, {variant:"error"});
               }
           }
 
           //componente
+  return (
+  <>
+    <div className="contentProductos">
+      <SnackbarProvider />
 
-    return(
-        <>
-     
-<div className="contentProductos ">
-    <SnackbarProvider />
-        
-            <div className="contentOptionsNav">
-                <div className={!esconder?"buttonsOptionsNav":"buttonsOptionsNav translate"}>
-                        <span onClick={()=>seeModal?setSeeModal(false):setSeeModal(true)} className="register "> registrar cliente</span>
-                        <span onClick={()=>filtro?setFiltro(false):setFiltro(true)} className="btnFiltrar"> filtrar<FontAwesomeIcon className="ps-2" icon={faFilter}></FontAwesomeIcon></span>
-                        {/*mostrar filtro */}
-                        <Filtro filtrarProduct={filtrarProduct} filtro={filtro}/>
-                         {/*modal*/}
-                        <ModalRegister getApi={getApi} seeModal={seeModal} setSeeModal={setSeeModal}></ModalRegister>
-                        <EditProduct ProductToEdit={ProductToEdit} getApi={getApi} editModal={editModal} setEditModal={setEditModal} />
-                </div>
+      <div className="contentOptionsNav">
+        <div className={!esconder ? "buttonsOptionsNav" : "buttonsOptionsNav translate"}>
+          <span onClick={() => seeModal ? setSeeModal(false) : setSeeModal(true)} className="register">registrar cliente</span>
+          <span onClick={() => filtro ? setFiltro(false) : setFiltro(true)} className="btnFiltrar">filtrar<FontAwesomeIcon className="ps-2" icon={faFilter}></FontAwesomeIcon></span>
 
-                   <FontAwesomeIcon icon={faMagnifyingGlass} className={windowWidth >= 700?'esconderIcono':'imgOptionsSearch'} onClick={()=>!esconder&&setEsconder(true)}/>
-                <div className={esconder?"searchOptionsNav":"searchOptionsNav translateSearch"}>
-                    <FontAwesomeIcon  icon={faArrowRight} className={windowWidth >= 700?'esconderIcono':'mostrarFlecha'} onClick={()=>esconder&&setEsconder(false)}/>
+          {/* mostrar filtro */}
+          <Filtro filtrarProduct={filtrarProduct} filtro={filtro} />
 
-                    <form action="" className="">
-                        <input onChange={(e)=>setBuscarProd(e.target.value)} className="form-control buscador" type="search" name="buscadorOptionsNav" id="buscadorOptionsNav"/>
-                        <input onClick={buscador} className="btn btn-dark" type="button" value="buscar"/>
-                    </form>
-                </div>
-            </div>
-            <div className="addProducts">
-                <table className="productos">
-                       <thead>
-                        <tr className="headTable text-center">
-                            <th>CLIENTE</th>
-                            <th>CELULAR</th>
-                            <th>FECHA</th>
-                            <th>VALOR</th>
-                            <th></th>
-                            <th></th>
-                            <th></th>
-                            <th></th>
-                            <th onClick={()=>getApi()} className="recharge"><FontAwesomeIcon  className="fs-5" icon={faRotateRight} /></th>
-                        </tr>   
-                       </thead>             
-                    <tbody className="bodyProducts">
-                        {
-                           hay?data.map((item, index)=>{
-                                return(
-                                    <tr  key={index}>
-                                        <td>{index}</td>
-                                        <td className="texto">{item.nombre}</td>
-                                        <td>{item.laboratorio}</td>
-                                        <td className="valorCred">{item.costo}</td>
-                                        {windowWidth >= 700 && <ClientToolsDesk faUserPen={faUserPen} deleteOredit={deleteOredit} faTrash={faTrash} />}
+          {/* modal */}
+          <ModalRegister getApi={getApi} seeModal={seeModal} setSeeModal={setSeeModal}></ModalRegister>
+          <EditCustomer idCredito={idCredito} customerEdit={customerEdit} getApi={getApi} editModal={editModal} setEditModal={setEditModal} />
+        </div>
 
-                                        
-                                          <td onClick={()=>showBtn(index)} className={windowWidth <= 700?'contBotonMobil':"contBotonMobil contentDesk"}>
-                                            {windowWidth <= 700 && <td   colSpan={3}><FontAwesomeIcon  className="tools" icon={elementoSeleccionado !== index?faPlus:faMinus}/></td>}
-                                            {windowWidth <= 700 && <td id="contBtnCredits" className={elementoSeleccionado === index?"btnCreditsUser":"btnCreditsUser esconderbtnUser"}>
-                                            <ClientTools faMinus={faMinus} faPlus={faPlus} windowWidth={windowWidth} faUserPen={faUserPen} faTrash={faTrash} deleteOredit={deleteOredit} />
-                                            </td>}
-                                          </td>
-                                        
-                                    
-                                    </tr>
-                                )
-                            })
-                            // eslint-disable-next-line react/no-unknown-property
-                            :<tr><td colSpan={5} className="text-center">agrega un producto</td></tr>
-                        }
-                    </tbody>
-                </table>
-                {/** historial  */}
-                <Historial sendNameRecord={sendNameRecord} showRecord={showRecord} setShowRecord={setShowRecord}></Historial>
-            </div>
-        </div> 
-         {/*  <BarInfo data={data}/>bar of Information*/}
-        </>
-    );
+        <FontAwesomeIcon icon={faMagnifyingGlass} className={windowWidth >= 700 ? 'esconderIcono' : 'imgOptionsSearch'} onClick={() => !esconder && setEsconder(true)} />
+
+        <div className={esconder ? "searchOptionsNav" : "searchOptionsNav translateSearch"}>
+          <FontAwesomeIcon icon={faArrowRight} className={windowWidth >= 700 ? 'esconderIcono' : 'mostrarFlecha'} onClick={() => esconder && setEsconder(false)} />
+          <Search getApi={getApi} setData={setData}/>
+        </div>
+      </div>
+
+      <div className="addProducts">
+        <table className="productos">
+          <thead>
+            <tr className="headTable text-center">
+              <th>CLIENTE</th>
+              <th>CELULAR</th>
+              <th>FECHA</th>
+              <th>VALOR</th>
+              <th></th>
+              <th></th>
+              <th></th>
+              <th></th>
+              <th onClick={() => getApi()} className="recharge"><FontAwesomeIcon className="fs-5" icon={faRotateRight} /></th>
+            </tr>
+          </thead>
+          <tbody className="bodyProducts">
+            {
+              hay ? data.map((item) => {
+                return (
+                  <tr  key={item.id_credito}>
+                    <td>{item.nombre}</td>
+                    <td className="texto">{item.celular}</td>
+                    <td>{item.fecha.split(" ")[0]}</td>
+                    <td className="valorCred">{item.valor}</td>
+
+                     {/* menu para escritorio */}
+                    {windowWidth >= 700 && <ClientToolsDesk showBtn={showBtn} id={item.id_credito} faUserPen={faUserPen} handlerClick={handlerClick} faTrash={faTrash}  />}
+                   
+                    {/* menu para movil */}
+                    <td onClick={() => showBtn(item.id_credito) } className={windowWidth <= 700 ? 'contBotonMobil' : "contBotonMobil contentDesk"}>
+                        {windowWidth <= 700 && <td colSpan={3}><FontAwesomeIcon className="tools" icon={elementoSeleccionado !== item.id_credito ? faPlus : faMinus} /></td>}
+                        {windowWidth <= 700 && <td id="contBtnCredits" className={elementoSeleccionado === item.id_credito ? "btnCreditsUser" : "btnCreditsUser esconderbtnUser"}>
+                          <ClientTools faMinus={faMinus} faPlus={faPlus} windowWidth={windowWidth} faUserPen={faUserPen} faTrash={faTrash} handlerClick={handlerClick} />
+                </td>}
+                    </td>
+                    
+                  </tr>
+                )
+              })
+                // eslint-disable-next-line react/no-unknown-property
+                : <tr><td colSpan={5} className="text-center">agrega un producto</td></tr>
+            }
+          </tbody>
+        </table>
+
+        {/* historial */}
+        {showRecord && <Historial idCredito={idCredito} sendNameRecord={sendNameRecord} showRecord={showRecord} setShowRecord={setShowRecord}></Historial>}
+
+        {/* sumar a el credito y abonar */}
+        <AddRecord idCredito={idCredito} showAddRecord={showAddRecord} setShowAddRecord={setShowAddRecord} sendNameRecord={sendNameRecord} />
+        <SubstractRecord idCredito={idCredito} showSubstractRecord={showSubstractRecord} setShowSubstractRecord={setShowSubstractRecord} sendNameRecord={sendNameRecord}></SubstractRecord>
+      </div>
+      <Pages setGetPage={setGetPage} paginas={paginas}/>
+      <BarInfo></BarInfo>
+    </div>
+
+    
+    
+  </>
+);
+
 };

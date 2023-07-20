@@ -14,7 +14,7 @@ export const ModalRegister=({seeModal, setSeeModal, getApi})=>{
 
     const upDateAndDelete=(e)=>{
         const producto={
-            id_usuario:1,
+            idUsuario:1,
             nombre:nombre,
             unidades:unidades,
             laboratorio:laboratorio,

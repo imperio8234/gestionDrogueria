@@ -23,6 +23,18 @@ export const Home=()=>{
       window.removeEventListener("resize", handleResize);
     };
   }, []);
+
+  // cmbio de color de los botones
+  const changeColorBtn = (elemento) => {
+    const changeColorBtn = document.querySelectorAll(".btnChangeclic");
+   changeColorBtn.forEach(e => {
+    if(e.classList == elemento.target.classList) {
+      e.classList.add("btnChange")
+    } else {
+      e.classList.remove("btnChange")
+    }
+   })
+}
     
 
 
@@ -33,10 +45,10 @@ export const Home=()=>{
                    <img src="../../../public/logodro.png" alt="drogueria"/>
                 </div>
                 <div className="buttonsMenu">
-                    {windowWidth <= 700 && <Navegador></Navegador>}
-                    <Link className="cerrarSesion span">cerrar  sesion</Link>
-                    <Link className="editarPerfil span">editar perfil</Link>
-                    <Link className="contacto span">contacto</Link>
+                    {windowWidth <= 700 && <Navegador changeColorBtn={changeColorBtn}></Navegador>}
+                    <Link onClick={(e) => changeColorBtn(e)} className="cerrarSesion span btnChangeclic">cerrar  sesion</Link>
+                    <Link onClick={(e) => changeColorBtn(e)} className="editarPerfil span btnChangeclic">editar perfil</Link>
+                    <Link onClick={(e) => changeColorBtn (e)} className="contacto span btnChangeclic">contacto</Link>
 
                 </div>
 
@@ -45,15 +57,7 @@ export const Home=()=>{
             <div className="contentNavigate">
                   <FontAwesomeIcon onClick={()=>openM == true?setOpenM(false):setOpenM(true)} className="desplMenu" icon={faBars} />
                 <div className="navButtons" id="barMenu">
-                   <Navegador></Navegador>
-                </div>
-
-                <div className="search">
-                   <form action="">
-                      <input className="form-control form-control-sm mb-5 mt-5" type="search"/>
-                      <input  className="btn btn-primary ms-2 btn-sm mb-5 mt-5" type="button" value="buscar"/>
-                   </form>
-
+                   <Navegador changeColorBtn= {changeColorBtn}></Navegador>
                 </div>
             </div>
 

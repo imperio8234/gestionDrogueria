@@ -10,17 +10,18 @@
 
 
 
+
 /* contenedor menu */
 
 .contentMenu{
-    background: #F7F7F7;
+    background: #0D2A61;
     height: 100%;
     grid-column: 1 / 2;
     grid-row: 1 / 6;
     display: flex;
     flex-direction: column;
     grid: 20px;
-    color: rgb(0, 0, 0);
+    color: rgb(255, 255, 255);
     transition: all 300ms ease-in;
     z-index: 1;
 }
@@ -60,15 +61,14 @@
     width: 100%;
     cursor: pointer;
     transition: all 300ms ease;
-    color: rgb(0, 0, 0);
+    color: #ffffff;
     text-decoration: none;
-    font-size: 0.7rem;
+    font-size: 0.9rem;
 
 }
 
 .buttonsMenu .span:hover{
-    border-radius: 10px;
-    border-bottom:solid 1px #FA2400;
+    background: #1c61e063;
 
 }
 
@@ -119,7 +119,7 @@
 
 /* barra de navegacion*/
 .contentNavigate{
-    background:#FA2400;
+    background:#ffffff;
     grid-column: 2/ 4;
     grid-row: 1/2;
     display: flex;
@@ -127,7 +127,7 @@
     align-items: center;
     padding: 20px;
     font-size: 0.8rem;
-    border-radius: 0px 0px 40px 40px;
+    border: 13px rgba(210, 210, 210, 0.227) solid;
 }
 
 .search{
@@ -146,7 +146,6 @@
     height: 100vh;
     background: rgba(93, 93, 93, 0.575);
     top: 0;
-    transition: all 300ms ease;
     font-size: 0.7rem;
 }
 
@@ -179,7 +178,7 @@
 }
 
 .navButtons{
-    width: 65%;
+    width: 100%;
     height: 50px;
     display: flex;
     padding: 10px;
@@ -201,16 +200,19 @@
 }
 
 .navButtons .span:hover{
-    background:#2626261b ;
+    background:#1c61e0b0 ;
     border-radius: 20px;
+}
+.btnChange{
+    background:#1c61e0b0 ;
 }
 
 @media (max-width: 700px) {
     .contentNavigate{
-        border-radius: 0px 0px 40px 0px;
         width: 100%;
         display: flex;
         justify-content:left;
+        font-size: 0.8rem;
     }
 
     .modalRegister{
@@ -230,9 +232,10 @@
     }
 
     .formularioProducts{
-        width: 65%;
-        height: 90%;
+        width: 80%;
+        height: 40%;
        margin: auto;
+       font-size: 1.4rem;
         
         
     }
@@ -284,9 +287,10 @@
     align-items: center;
     /*padding: 10px;*/
     overflow: hidden;
-    font-size: 0.7rem;  
-    box-shadow: 0px 8px 2px 2px   rgba(0, 0, 0, 0.706);
-    
+    font-size: 0.9rem;  
+    background-color: #ffffff;
+    border-left:13px rgba(210, 210, 210, 0.227) solid;
+    border-right: 13px rgba(210, 210, 210, 0.227) solid;
 }
 
 .buttonsOptionsNav{
@@ -294,9 +298,6 @@
     display: flex;
     justify-content: space-around;
     transition: all ease 300ms;
-   
-    
-    
 }
 
 
@@ -308,19 +309,18 @@
     cursor: pointer;
      padding: 6px;
      text-decoration: none;
-     color:black
+     color:black;
+     font-size: 0.9rem;
 }
 
 .buttonsOptionsNav span:hover{
-    background: #FA2400;
+    background:#1c61e0b0 ;
     border-radius: 10px;
 }
 .searchOptionsNav{
     width: 50%;
     display: flex;
-    transition: all 300ms ease;
-    
-    
+    transition: all 300ms ease;  
     
 }
 
@@ -329,7 +329,7 @@
     width: 170px;
     min-height: 150px;
     border-radius: 10px;
-    background: #e3e3e3;
+    background: #BDBDBD;
     top: 16%;
     left: 54%;
     padding: 10px;
@@ -420,7 +420,7 @@
     grid-column: 2 / 4;
     display: flex;
     justify-content: space-between;
-    background: #6f6f6f;
+    background: #BDBDBD;
     color: white;
  }
 
@@ -449,17 +449,17 @@ thead{
     top: 0;
 }
 thead tr{
-    background: #c2c1c1;
-    border-bottom: #6f6f6f solid 1px; 
+    background: rgba(210, 210, 210, 0.227);
     height: 30px;   
     font-size: 0.7rem;
+    color: rgb(0, 0, 0);
 
      
 }
 
 tbody{
     margin-top: 20px;
-    height: 100px;
+    min-height: 10px;
     font-size: 0.6rem; 
 }
 
@@ -494,7 +494,7 @@ tbody tr:nth-child(2n){
   
 
     .buttonsOptionsNav span{
-        font-size: 0.6rem;
+        font-size: 0.9rem;
       
 
     }
@@ -505,11 +505,10 @@ tbody tr:nth-child(2n){
 
 
     .buttonsOptionsNav{
-        min-width: 200px;
+        min-width: 250px;
         display: flex;
         justify-content: space-between;
-        padding: 10px;
-        
+        padding: 10px;        
     }
 
     .contentProductos{
@@ -519,7 +518,7 @@ tbody tr:nth-child(2n){
         display: flex;
         width: auto;
         align-items: center;
-        transform: translateX(-55%);
+        transform: translateX(-74%);
         
     }
 
@@ -545,6 +544,7 @@ tbody tr:nth-child(2n){
     thead {
         height: 10px;
         height: 5px;
+        background-color: rgb(153, 153, 153);
     }
     thead tr{
         width: 10px;
@@ -566,7 +566,9 @@ tbody tr:nth-child(2n){
 
     tbody tr td{
         padding-left: 10px;
-        text-align: justify;
+        text-align: center;
+        font-size: 1rem;
+        line-height: 2.4rem;
     }
 
     .menuFiltrar{
@@ -584,4 +586,22 @@ tbody tr:nth-child(2n){
 @font-face {
     font-family:poppin;
     src: url(../public/fonts/Poppins-Light.ttf);
+}
+
+
+/* paginacion*/
+
+.cont-pages{
+    position: absolute;
+    right: 0;
+    top: 85%;
+
+}
+/*barra de informacion */
+.bar-info{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    height: 30px;
 }
