@@ -1,27 +1,32 @@
 import { enqueueSnackbar } from "notistack";
 import { useState } from "react"
-import { random } from "../../../toolsDev/random"
+import { Factura } from "./componentsfacturar/facturaPago";
+import {PDFViewer, PDFDownloadLink} from "@react-pdf/renderer"
 import { Pago } from "./pagoFactura";
+import { Separador } from "../../../toolsDev/separacion";
 
 // eslint-disable-next-line react/prop-types
 export const Panel = ({getProducts, setProducts, venta}) => {
     const [facturar, setFacturar] = useState(false);
+    const [facturado, setFacturado] = useState(false);
+    const [ventaRealizada, setVentaRealizada] = useState([]);
+    
     const Vender = () => {
-        
-        setFacturar(true)
-
+        setFacturar(true);
     }
 
-    const cancelarVenta = async () => {
+      const cancelarVenta = async () => {
         try {
-            const res = await fetch("http://localhost:2000/api/v1/lista/all/1",{
+            const res = await fetch("http://localhost:2000/api/v1/lista/all",{
                 method:"DELETE",
                 headers:{
                     "content-type": "application/json"
                 },
+                credentials:"include"
             })
-            if (res) {
-                enqueueSnackbar("venta cancelada", {variant: "success"});
+            const result = await res.json();
+            if (result) {
+                enqueueSnackbar("venta finalizada", {variant: "success"});
                 getProducts();
                 setProducts([])
             } 
@@ -32,22 +37,34 @@ export const Panel = ({getProducts, setProducts, venta}) => {
     }
     return (
         <div className="cont-panel">
-            <div className="cont-calcula">
-
-            </div>
             <div className="actions-venta d-flex justify-content-center align-items-center gap-3 p-3 flex-column">
-                <div onClick={() => Vender()} className="vender btn btn-success text-secondary-emphasis btn-sm w-100 h-50 fs-6 d-flex justify-content-between align-items-center">
+                <div onClick={() => !venta <= 0 && Vender()} className={!venta <= 0?"vender btn btn-success btn-sm w-100 h-50 fs-6 d-flex justify-content-between align-items-center":"vender btn btn-secondary btn-sm w-100 h-50 fs-6 d-flex justify-content-between align-items-center pe-none"}>
                     <span>vender</span>
-                    <span>{venta}</span>
+                    <span>{venta? Separador(venta): 0 }</span>
                 </div>
-                <div className="devolucion btn btn-primary btn-sm w-100 h-50 fs-6 text-secondary-emphasis text-start">
+                <div className="devolucion btn btn-primary btn-sm w-100 h-50 fs-6  text-start">
                     <span>devoluciones</span>
                 </div>
-                <div onClick={()=> cancelarVenta()} className="btn btn-danger btn-sm text-secondary-emphasis text-start w-100 h-50 fs-6 ">
+                <div onClick={()=> !venta <= 0 && cancelarVenta()} className={!venta <= 0 ? "btn btn-danger btn-sm text-start w-100 h-50 fs-6 ":"btn btn-secondary btn-sm text-start w-100 h-50 fs-6 pe-none"}>
                     <span>cancelar venta</span>
                     
                 </div>
-                {facturar && <Pago  setFacturar={setFacturar}/>}
+                {facturar && <Pago cancelarVenta={cancelarVenta} setVentaRealizada={setVentaRealizada} setFacturado={setFacturado}  setFacturar={setFacturar}/>}
+                {facturado && (<div className="overf">
+                    <div className="botones d-flex flex-column gap-3 m-3">
+                    <div onClick={()=> setFacturado(false)} className="btn btn-success">
+                        <span>cerrar</span>
+                    </div>
+
+                    <PDFDownloadLink document={<Factura setFacturado={setFacturado} ventaRealizada={ventaRealizada} />} fileName="factura">
+                   <div onClick={()=> {enqueueSnackbar("se creo una factura puedes enviarla", {variant:"success"})}} className="btn btn-primary">
+                        <span>guardar factura</span>
+                    </div>
+                   </PDFDownloadLink>
+                    </div>
+
+                    <PDFViewer style={{width:"50%", height:"75%"}}><Factura setFacturado={setFacturado} ventaRealizada={ventaRealizada} /></PDFViewer>
+                              </div>)}
 
             </div>
         </div>

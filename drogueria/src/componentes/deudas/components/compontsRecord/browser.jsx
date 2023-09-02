@@ -1,3 +1,5 @@
+import { faMagnifyingGlass } from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { enqueueSnackbar } from "notistack";
 import { useState, useEffect } from "react"
 
@@ -7,8 +9,9 @@ export const Search = ({ setData, getApi}) => {
      //// buscar producto           
      async function buscador(){
        try {
-        const res = await fetch(`http://localhost:2000/api/v1/creditos/find/1/${words}`, {
+        const res = await fetch(`http://localhost:2000/api/v1/deudas/find/${words}`, {
             method:"GET",
+            credentials: "include",
             headers:{
                 "content-type":"application/json"                
             }
@@ -38,9 +41,9 @@ export const Search = ({ setData, getApi}) => {
           
     return (
         <>
-        <form action="" className="">
-            <input onChange={(e) => setWords(e.target.value)} className="form-control form-control-sm buscador" type="search" name="buscadorOptionsNav" id="buscadorOptionsNav" />
-            <input onClick={buscador} className="btn btn-dark btn btn-sm" type="button" value="buscar" />
+        <form action="" className="d-flex align-items-center">
+            <input onChange={(e) => setWords(e.target.value)} className="form-control form-control-sm buscador rounded-5" type="search" name="buscadorOptionsNav" id="buscadorOptionsNav" />
+            <div onClick={buscador} className="ms-1 link-primary" type="button" value="buscar" ><FontAwesomeIcon icon={faMagnifyingGlass}/></div>
           </form>
         </>
     )

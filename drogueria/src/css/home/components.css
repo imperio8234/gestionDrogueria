@@ -28,15 +28,13 @@
 
 
 .contentLog{
-    width: 90%;
+    height: 10%;
     border-bottom: 1px solid rgb(0, 0, 0);
 }
 
-.contentLog img{
-    width: 100%;
-}
+
 .buttonsMenu{
-    height: 50%;
+    height: 90%;
     display: flex;
     flex-direction: column;
     justify-content:space-around;
@@ -88,7 +86,7 @@
 
     .contentMenu{
     position: fixed;
-    width: 70%;
+    width: 100%;
     top: 65px;  
     border-radius: 0px 20px 0px 0px;
     }
@@ -103,10 +101,10 @@
     }
 
     .contentLog img{
-        width: 65%;
+        width: 25%;
     }
     .buttonsMenu{
-        height: 60%;
+        height: 80%;
         
         
     }
@@ -151,7 +149,8 @@
 
 .formularioProducts{
     width: 500px;
-    height: 500px;
+    height: auto;
+    padding: 10px;
     background: white;
     border-radius: 20px;
     margin-left: 23%;
@@ -201,7 +200,6 @@
 
 .navButtons .span:hover{
     background:#1c61e0b0 ;
-    border-radius: 20px;
 }
 .btnChange{
     background:#1c61e0b0 ;
@@ -233,7 +231,7 @@
 
     .formularioProducts{
         width: 80%;
-        height: 40%;
+        height: auto;
        margin: auto;
        font-size: 1.4rem;
         
@@ -326,10 +324,9 @@
 
 .menuFiltrar{
     position: absolute;
-    width: 170px;
+    width: 300px;
     min-height: 150px;
     border-radius: 10px;
-    background: #BDBDBD;
     top: 16%;
     left: 54%;
     padding: 10px;
@@ -339,7 +336,6 @@
     box-shadow: #262626ac 4px 6px 10px 0px;
     z-index: 1;
     overflow: hidden;
-    transition: all ease 300ms;
 
 }
 

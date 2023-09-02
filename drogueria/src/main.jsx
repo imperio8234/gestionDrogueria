@@ -7,6 +7,8 @@ import { ContentComponents } from './componentes/inventario/contenedorProductos.
 import { ContentCredits } from './componentes/creditos/contentCredits.jsx';
 import { ContentDeudas } from './componentes/deudas/contentDeudas.jsx';
 import { Ventas } from './componentes/ventas/contVentas.jsx';
+import { Metrica } from './componentes/metricas/contMetrica.jsx';
+import UserProfile from './componentes/perfil/contentProfile.jsx';
 //import store from './componentes/redux/store.js';
 //import { Provider } from "react-redux";
 // crear enrutador
@@ -17,7 +19,12 @@ const router=createBrowserRouter([
     children:[
     {
       path:"/",
-      element:<h2>esta es la pagina de metricas</h2>
+      element:<Metrica />
+    },
+    {
+      path: "/perfil",
+      element: <UserProfile />
+
     },
     {
         path:"/inventario",

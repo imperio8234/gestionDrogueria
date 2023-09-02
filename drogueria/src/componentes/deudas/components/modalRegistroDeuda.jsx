@@ -2,6 +2,7 @@ import axios from "axios";
 import { useState } from "react";
 import {enqueueSnackbar} from "notistack";
 import { CurrentDate } from "../../../toolsDev/useCurrentDate";
+import { Subscripcion } from "../../pagarMensualidad/subscripcion";
 
 // eslint-disable-next-line react/prop-types
 export const ModalRegister=({seeModal, setSeeModal, getApi})=>{
@@ -11,6 +12,7 @@ export const ModalRegister=({seeModal, setSeeModal, getApi})=>{
     const [nombre, setNombre]=useState("");
     const [phoneNumber, setphoneNumber]=useState("");
     const [date, setdate]=useState("");
+    const [subscripcion, setSubscripcion] = useState(false);
     
 
     //optener informacion cancelar el furmulario y guardarlo
@@ -19,7 +21,7 @@ export const ModalRegister=({seeModal, setSeeModal, getApi})=>{
         const producto={
             idUsuario:1,
             nombre:nombre,
-            phoneNumber:phoneNumber,
+            celular:phoneNumber,
             date:CurrentDate()           
         }
         e.preventDefault();
@@ -43,13 +45,17 @@ export const ModalRegister=({seeModal, setSeeModal, getApi})=>{
 
        async function enviarApi(producto){
             try {
-                await axios.post("http://localhost:2000/api/v1/creditos",producto)
+                await axios.post("http://localhost:2000/api/v1/deudas",producto, {withCredentials: true})
                 .then(res=>{
                     if(res.data.success){
                         getApi();
                         enqueueSnackbar("se guardo exitosamente",{variant:"success"});
                     }else{
-                        enqueueSnackbar(res.data.message,{variant:"error"});
+                        if (res.message) {
+                            setSubscripcion(true)
+                        } else {
+                            enqueueSnackbar(res.data.message,{variant:"error"});
+                        }
                     }})
             } catch (error) {
             enqueueSnackbar(error, {variant:"error"})
@@ -88,6 +94,7 @@ export const ModalRegister=({seeModal, setSeeModal, getApi})=>{
                         </form>                   
                     </div>
             </div> 
+            {subscripcion && <Subscripcion setSubscripcion={setSubscripcion} />}
         </>
 
     );

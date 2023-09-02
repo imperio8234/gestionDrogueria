@@ -4,6 +4,8 @@ import { useState } from "react";
 import {CurrentDate} from "../../../../toolsDev/useCurrentDate"
 import axios from "axios";
 import { enqueueSnackbar } from "notistack";
+import { Subscripcion } from "../../../pagarMensualidad/subscripcion";
+import { Busqueda } from "./busqueda";
 
 // eslint-disable-next-line react/prop-types
 export const AddRecord=({sendNameRecord, showAddRecord, setShowAddRecord, idCredito})=>{
@@ -11,6 +13,7 @@ export const AddRecord=({sendNameRecord, showAddRecord, setShowAddRecord, idCred
     const [product, setProduct]=useState("");
    // const [date, setDate]=useState();
     const [value, setValue]=useState("");
+    const [subscripcion, setSubscripcion] = useState(false);
 
     // send api 
 
@@ -29,7 +32,7 @@ export const AddRecord=({sendNameRecord, showAddRecord, setShowAddRecord, idCred
 
     async function requestApi(objRecord){
         try {
-            await axios.post("http://localhost:2000/api/v1/addcredit-record", objRecord)
+            await axios.post("http://localhost:2000/api/v1/addcredit-record", objRecord, {withCredentials: true})
             .then(e => {
                 if (e.data.success) {
                     enqueueSnackbar(`${e.data.message}`, {variant: "success"});
@@ -37,7 +40,11 @@ export const AddRecord=({sendNameRecord, showAddRecord, setShowAddRecord, idCred
                 setValue("");
                 setShowAddRecord(false)
                 } else {
-                    enqueueSnackbar(`${e.data.message}`, {variant: "error"});
+                     if (e.message) {
+                        setSubscripcion(true)
+                     } else {
+                        enqueueSnackbar(`${e.data.message}`, {variant: "error"});
+                     }
                 }
                 
             })
@@ -71,7 +78,8 @@ export const AddRecord=({sendNameRecord, showAddRecord, setShowAddRecord, idCred
                 <input onClick={()=> cancelSend()} className="btn btn-danger btn btn-sm" type="button" value="cancelar" />
                 <input onClick={()=> sendApi()} className="btn btn-success btn btn-sm" type="button" value="guardar" />
             </div>
-
+            <Busqueda />
+            {subscripcion && <Subscripcion setSubscripcion={setSubscripcion} />}
         </div>
 
     )

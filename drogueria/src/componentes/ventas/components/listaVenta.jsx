@@ -1,30 +1,34 @@
 import { enqueueSnackbar } from "notistack";
 import { useState } from "react"
-import { useEffect, useContext } from "react"
-import {userContext} from "../context/context"
+import { useEffect } from "react"
+import { Separador } from "../../../toolsDev/separacion";
+
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome"
-import {faTrashCan, faPenToSquare} from "@fortawesome/free-regular-svg-icons"
+import {faTrashCan} from "@fortawesome/free-regular-svg-icons"
 
 // eslint-disable-next-line react/prop-types
-export const ListaVentas = ({getProducts, products}) => {
+export const ListaVentas = ({getProducts, products, setProducts}) => {
    // const {products} = useContext(userContext);    
     const [productos, setProductos] = useState([]);
-    const [edit, setEdit] = useState(0);
     useEffect(() => {
        setProductos(products) 
-       console.log(products)
     }, [products])
-    const deleteItem = async (idProducto, idUsuario) => {
+    const deleteItem = async (idProducto) => {
         try {
-            fetch(`http://localhost:2000/api/v1/lista/${idUsuario}/${idProducto}`, {
+            fetch(`http://localhost:2000/api/v1/lista/${idProducto}`, {
                 method: "DELETE",
                 headers:{
                     "content-type": "application/json"
-                }
+                },
+                credentials: "include",
             })
             .then(result => {
                 if (result) {
                     getProducts()
+                    if(productos.length <= 1){
+                        setProducts([]);
+                        setProductos([])
+                    }
                 }
             })
             
@@ -35,34 +39,37 @@ export const ListaVentas = ({getProducts, products}) => {
 
 
     }
-    const editItem = async (unidades, precio,id_producto, id_usuario, operacion ) => {
-        console.log(id_producto, unidades)
+    const editItem = async (unidades, precio,id_producto ) => {
       if (unidades <= 0) {
-            deleteItem(id_producto, id_usuario);
+            deleteItem(id_producto);
         }
         let valorTotal = unidades * precio;
         
         const producto = {
             id_producto,
-            id_usuario,
             unidades,
             valorTotal
         }
 
         try {
-             await fetch("http://localhost:2000/api/v1/lista", {
+            const res= await fetch("http://localhost:2000/api/v1/lista", {
                 method: "PUT",
+                credentials:"include",
                 headers:{
                     "content-type": "application/json"
                 },
+                
                 body: JSON.stringify(producto)
             })
-            getProducts()
-            
+            const resultado = await res.json();
+            if (resultado.success) {
+                getProducts();
+            } else {
+                getProducts();
+            }
         } catch (error) {
             if (error) {
                 enqueueSnackbar("error", {variant:"warning"})
-                console.log(error)
             }
         }
         
@@ -74,49 +81,47 @@ export const ListaVentas = ({getProducts, products}) => {
                 <table className="table">
                     <tbody>
                         {
-                           productos.length != 0? productos.map((item, index) => {
+                           !productos.length <= 0? productos.map((item, index) => {
                              // Definir variables
                              let contador = !item.unidades? 1: item.unidades;
 
                              // Función para incrementar el contador
-                             function incrementarContador(e) {
-                               contador++;
-                               contadorInit(e)
+                             function incrementarContador(e, id, index) {
+                                contador++;
+                                contadorInit(e, id, index);
+                               
                              }
                              
                              // Función para reiniciar el contador
-                             function reiniciarContador(e) {
+                             function reiniciarContador(e, id, index) {
                                contador --;
                                
-                               contadorInit(e)
+                               contadorInit(e, id, index)
                              }
-                             function contadorInit() {
-                               document.querySelector(".counter").textContent = contador
-                               document.querySelector(".total-item").textContent = contador * item.precio
+                             function contadorInit(e, id, index) {
+                               document.getElementById(id).textContent = contador;
+                               document.getElementById(index).textContent = contador * item.precio;
                              }
                            
                                 return (
                                     <tr className="fs-6" key={item.id_producto}>
                                       <td className="d-flex justify-content-center w-100">
                                         <div className="cont-unidades-suma w-100 d-flex gap-3">
-                                          <div onClick={(e)=>{setEdit(item.id_producto); edit == item.id_producto && reiniciarContador(e); editItem(contador, item.precio, item.id_producto, item.id_usuario, "resta")} } className="restar-uni ">
+                                          <div onClick={(e)=>{reiniciarContador(e, item.id_producto, index); editItem(contador, item.precio, item.id_producto, item.id_usuario)} } className="restar-uni ">
                                              <span>&minus;</span>
                                           </div>
                                           <div className="contador ">
-                                            <span className="counter">{item.unidades}</span>
+                                            <span id={item.id_producto}>{item.unidades}</span>
                                           </div>
-                                          <div onClick={(e) => {setEdit(item.id_producto); edit == item.id_producto && incrementarContador(e); editItem(contador, item.precio, item.id_producto, item.id_usuario, "suma")}} className="sumar-uni">
+                                          <div onClick={(e) => {incrementarContador(e, item.id_producto, index); editItem(contador, item.precio, item.id_producto, item.id_usuario)}} className="sumar-uni">
                                               <span>&#43;</span>
                                           </div>
                                         </div>
                                       </td>
                                       <td>{item.nombre}</td>
-                                      <td>{item.precio}</td>
-                                      <td className="total-item">{item.valor_total}</td>
+                                      <td>{ item.precio?Separador(item.precio):0}</td>
+                                      <td id={index}>{item.valor_total?Separador(item.valor_total):0}</td>
                                       <td className=" w-25"><div className="w-100 d-flex justify-content-around">
-                                           <div onClick={() => setEdit(item.id_producto)} className="im1 pointer">
-                                            <FontAwesomeIcon icon={faPenToSquare} className="fs-4" />
-                                           </div>
                                            <div onClick={() => deleteItem(item.id_producto, item.id_usuario)} className="im2 pointer">
                                            <FontAwesomeIcon icon={faTrashCan} className=" fs-4" />                                           </div>
                                           </div>

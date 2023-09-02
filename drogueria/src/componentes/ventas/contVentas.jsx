@@ -2,6 +2,7 @@ import { enqueueSnackbar, SnackbarProvider } from "notistack"
 import { useEffect } from "react"
 import { useState } from "react"
 import "../../css/home/ventas.css"
+import { Subscripcion } from "../pagarMensualidad/subscripcion"
 import { Barra } from "./components/barraTotal"
 import { ProductosVenta } from "./components/busquedaProducto"
 import { ListaVentas } from "./components/listaVenta"
@@ -10,6 +11,19 @@ import {userContext} from "./context/context"
 export const Ventas = () => {
     const [products, setProducts] = useState([]);
     const [venta, setVenta] = useState();
+    const [subscripcion, setSubscripcion] = useState(false);
+    const [windowWidth, setWindowWidth] = useState(window.innerWidth);
+
+    useEffect(() => {
+        const handleResize = () => {
+          setWindowWidth(window.innerWidth);
+        };  
+        window.addEventListener("resize", handleResize);
+        return () => {
+          window.removeEventListener("resize", handleResize);
+        };
+      }, []);
+
     useEffect(() =>{
         getProducts()
     },[])
@@ -27,20 +41,23 @@ export const Ventas = () => {
     }
     const getProducts = async () => {
         try {
-            const res = await fetch("http://localhost:2000/api/v1/lista/1", {
+            const res = await fetch("http://localhost:2000/api/v1/lista", {
                 method:"GET",
                 headers:{
                     "content-type": "application/json"
-                }
+                },
+                credentials: "include",
             })
             const result = await res.json();
+            if(result.status === 500) {
+                setSubscripcion(true)
+            }
             if (result.success) {
-              //  setProducts(result.result)
+                setProducts(result.result)
             }
         } catch (error) {
             if (error) {
                 enqueueSnackbar("se produjo un error", {variant:"error"})
-                console.log(error)
             }
         }
     }
@@ -52,12 +69,14 @@ export const Ventas = () => {
     return (
       <SnackbarProvider>
          <userContext.Provider value={obj}>
-         <div className="contentProductos d-flex flex-column">
-            <ProductosVenta getProducts={getProducts} products={products} setProducts={setProducts} />
-            <ListaVentas getProducts={getProducts} products={products} />
-            <Barra venta={venta} />
-            <Panel venta={venta} setProducts={setProducts} getProducts={getProducts} products={products} venta={venta} />
-            
+         <div className={windowWidth <= 700 ?"contentProductos d-flex flex-column":"contentProductos d-flex" }>
+            <ProductosVenta windowWidth={windowWidth} getProducts={getProducts} products={products} setProducts={setProducts} />
+             <div className={windowWidth <= 700?"w-100 h-50":"w-50"}>
+             <ListaVentas getProducts={getProducts} products={products} setProducts={setProducts} />
+             <Barra venta={venta} />
+             <Panel setProducts={setProducts} getProducts={getProducts} products={products} venta={venta} />
+             </div>
+            {subscripcion && <Subscripcion setSubscripcion={setSubscripcion} />}
         </div>
        </userContext.Provider>
       </SnackbarProvider>

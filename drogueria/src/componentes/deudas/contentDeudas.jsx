@@ -1,12 +1,10 @@
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
-import {faArrowRight, faMagnifyingGlass, faFilter,faPlus ,faTrash,faMinus ,faUserPen, faRotateRight} from "@fortawesome/free-solid-svg-icons";
+import {faArrowRight, faMagnifyingGlass, faFilter,faPlus,faMinus , faRotateRight} from "@fortawesome/free-solid-svg-icons";
 import { useState, useEffect } from "react";
 import { ModalRegister } from "./components/modalRegistroDeuda";
 import axios from "axios"; 
 import {SnackbarProvider, enqueueSnackbar } from "notistack";
 import Swal from "sweetalert2";
-import { ClientTools} from "./components/clientTools";
-import {ClientToolsDesk} from "./components/clientToolsDesk";
 import "../../css/home/creditos.css/creditos.css";
 import { Historial } from "./components/historial";
 import { Filtro } from "./components/filtroDeuda";
@@ -17,6 +15,7 @@ import { Pages } from "../creditos/components/compontsRecord/paginacion";
 import { arrayConverter } from "../../toolsDev/arrayConverter";
 import { BarInfo } from "../creditos/components/compontsRecord/infoBarr";
 import { Search } from "./components/compontsRecord/browser";
+import { Botones } from "../creditos/BOTONES.JSX";
 
 //import { BarInfo } from "./barraInfo";
 //import { Separador } from "../../toolsDev/separacion";
@@ -56,7 +55,11 @@ export const ContentDeudas=()=>{
       };
          
     }, []);
-
+   useEffect(() =>{
+    if (windowWidth >= 700) {
+      setElementoSeleccionado(null)
+    } 
+   },[windowWidth])
     
 
     //get data to api
@@ -67,7 +70,7 @@ export const ContentDeudas=()=>{
 
    async function getApi(){
     try {
-        await axios.get("http://localhost:2000/api/v1/deudas/1/1",)
+        await axios.get("http://localhost:2000/api/v1/deudas/1",{withCredentials:true})
         .then(res=>{             
             if (res.data.success) {
               setData(res.data.data.data);
@@ -78,7 +81,13 @@ export const ContentDeudas=()=>{
             }     
         });
     } catch (error) {
-        enqueueSnackbar(error, {variant:"error"})
+        enqueueSnackbar(error, {variant:"error"});
+        if(error.response.status == 401){
+          alert("inicia sesion");
+          localStorage.removeItem("user");
+          location.reload();
+          
+      }
         
     }
    }
@@ -86,7 +95,7 @@ export const ContentDeudas=()=>{
    //delete product and edit product show record addRecord controller
    function handlerClick(e, id_Deuda){
     const id = windowWidth < 700?elementoSeleccionado : id_Deuda
-    const customerToEdit= data.find(obj => obj.id_Deuda ===  id);
+    const customerToEdit= data.find(obj => obj.id_deuda ===  id);
     if(e == "delet"){ 
       // eliminar producto
         Swal.fire({
@@ -100,7 +109,7 @@ export const ContentDeudas=()=>{
             if (res.isConfirmed) {
 
               //delete product
-                deleteProduct(customerToEdit.nombre);
+                deleteProduct(id_Deuda, customerToEdit.nombre);
             }
         }); 
         
@@ -117,7 +126,7 @@ export const ContentDeudas=()=>{
       }
 
       // events record      
-   }else if(e == "Historial"){
+   }else if(e == "historial"){
     showRecord?setShowRecord(false):setShowRecord(true);
     !showRecord && setShowAddRecord(false), setShowSubstractRecord(false);
    
@@ -135,7 +144,8 @@ export const ContentDeudas=()=>{
     setIdDeuda(id);
    }else if(e == "abonar") {
     showSubstractRecord?setShowSubstractRecord(false): setShowSubstractRecord(true);
-
+    setSendNameRecord(customerToEdit.nombre);
+    setIdDeuda(id);
     !showSubstractRecord && setShowRecord(false), setShowAddRecord(false)
    } else {
     console.log("no hay botones que coincidan")
@@ -144,11 +154,12 @@ export const ContentDeudas=()=>{
   }
   
   //mostrar menu de botones del usuario registrado 
-  function  showBtn(index, accion){
+  function  showBtn(index){
     
     
-    handlerClick(accion, index)
+   // handlerClick(accion, index)
     setElementoSeleccionado(index)
+    console.log(elementoSeleccionado, "esto estra bien")
    if (elementoSeleccionado) {
     setElementoSeleccionado(null)
    }
@@ -156,12 +167,12 @@ export const ContentDeudas=()=>{
 
 
 //request api delete
-async function deleteProduct(cliente){
+async function deleteProduct(cliente, nombre){
     try {
-        axios.delete(`http://localhost:2000/deletecustomer/${cliente}`)
+        axios.delete(`http://localhost:2000/api/v1/deudas/${cliente}`,{withCredentials: true})
         .then(res=>{
             if(res.data.success){
-                enqueueSnackbar(`se elimino a ${cliente} correctamente`,{variant:"success"})
+                enqueueSnackbar(`se elimino a ${nombre} correctamente`,{variant:"success"})
                 getApi();
             } else {
                 enqueueSnackbar( `${res.data.message} no se puede elimiar`,{variant:"info"});
@@ -219,7 +230,7 @@ async function deleteProduct(cliente){
           <EditCustomer idDeuda={idDeuda} customerEdit={customerEdit} getApi={getApi} editModal={editModal} setEditModal={setEditModal} />
         </div>
 
-        <FontAwesomeIcon icon={faMagnifyingGlass} className={windowWidth >= 700 ? 'esconderIcono' : 'imgOptionsSearch'} onClick={() => !esconder && setEsconder(true)} />
+        <FontAwesomeIcon icon={faMagnifyingGlass} className={windowWidth >= 700 || esconder? 'esconderIcono' : 'imgOptionsSearch'} onClick={() => !esconder && setEsconder(true)} />
 
         <div className={esconder ? "searchOptionsNav" : "searchOptionsNav translateSearch"}>
           <FontAwesomeIcon icon={faArrowRight} className={windowWidth >= 700 ? 'esconderIcono' : 'mostrarFlecha'} onClick={() => esconder && setEsconder(false)} />
@@ -251,18 +262,7 @@ async function deleteProduct(cliente){
                     <td className="texto">{item.celular}</td>
                     <td>{item.fecha.split(" ")[0]}</td>
                     <td className="valorCred">{item.valor}</td>
-
-                     {/* menu para escritorio */}
-                    {windowWidth >= 700 && <ClientToolsDesk showBtn={showBtn} id={item.id_Deuda} faUserPen={faUserPen} handlerClick={handlerClick} faTrash={faTrash}  />}
-                   
-                    {/* menu para movil */}
-                    <td onClick={() => showBtn(item.id_Deuda) } className={windowWidth <= 700 ? 'contBotonMobil' : "contBotonMobil contentDesk"}>
-                        {windowWidth <= 700 && <td colSpan={3}><FontAwesomeIcon className="tools" icon={elementoSeleccionado !== item.id_Deuda ? faPlus : faMinus} /></td>}
-                        {windowWidth <= 700 && <td id="contBtnCredits" className={elementoSeleccionado === item.id_Deuda ? "btnCreditsUser" : "btnCreditsUser esconderbtnUser"}>
-                          <ClientTools faMinus={faMinus} faPlus={faPlus} windowWidth={windowWidth} faUserPen={faUserPen} faTrash={faTrash} handlerClick={handlerClick} />
-                </td>}
-                    </td>
-                    
+                    <td className="w-50" rowSpan={1}><FontAwesomeIcon onClick={() => showBtn(item.id_deuda)} className={windowWidth <= 700 ?"tools": "d-none"} icon={elementoSeleccionado == item.id_deuda ? faMinus:faPlus  }/> {elementoSeleccionado == item.id_deuda  ? <Botones handlerClick={handlerClick} item={item.id_deuda} seleccionado={elementoSeleccionado} clase ={windowWidth <= 700 ?"d-none":"contBotonMobil"}/>: null}{windowWidth <= 700 ?null : <Botones item={item.id_deuda} handlerClick={handlerClick} />}</td>     
                   </tr>
                 )
               })

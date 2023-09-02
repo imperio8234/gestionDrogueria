@@ -3,12 +3,14 @@ import { useState } from "react";
 import {enqueueSnackbar} from "notistack";
 //import { Separador } from "../../toolsDev/separacion";
 import { CurrentDate } from "../../../toolsDev/useCurrentDate";
+import { Subscripcion } from "../../pagarMensualidad/subscripcion";
 
 // eslint-disable-next-line react/prop-types
 export const EditCustomer=({getApi, idCredito, editModal, setEditModal, customerEdit})=>{
     const [nombre, setNombre]=useState("");
     const [fecha, setfecha]=useState("");
     const [celular, setcelular]=useState("");
+    const [subscripcion, setSubscripcion] = useState(false);
 
     const customerToEdit=customerEdit;
 
@@ -16,7 +18,6 @@ export const EditCustomer=({getApi, idCredito, editModal, setEditModal, customer
    
 
     const upDateAndDelete=(e)=>{
-        console.log(typeof celular)
         const date = CurrentDate();
         const customer={
             nombre:nombre || customerToEdit.nombre,
@@ -41,15 +42,23 @@ export const EditCustomer=({getApi, idCredito, editModal, setEditModal, customer
        async function enviarApi(customer){
 
             try { 
-                await axios.put(`http://localhost:2000/editcustomer`, customer)
+                await axios.put(`http://localhost:2000/api/v1/deudas`, customer, {withCredentials:true})
                 .then(res=>{
+                    if (res.message) {
+                        setSubscripcion(true);
+                    }
                     if(res.data.success){
                         getApi();
                         enqueueSnackbar("se actualizo exitosamente",{variant:"success"});
                         setEditModal(false);
                         formatearFormulario();
                    
-                    }})
+                    }
+                    if (res.message) {
+                        setSubscripcion(true);
+                    }
+                })
+                    
             } catch (error) {
                 console.log(error)
             enqueueSnackbar(error, {variant:"error"})
@@ -69,7 +78,6 @@ export const EditCustomer=({getApi, idCredito, editModal, setEditModal, customer
         <>
          <div onClick={(e)=>{e.target.className == "modalRegister" &&setEditModal(false)}} className={editModal?"modalRegister":"modalRegister closedModal"}>
                     <div className="formularioProducts">
-                            actualizar
                         <form className="formuR form-control">
                         
                             <label  htmlFor="customer">
@@ -93,7 +101,8 @@ export const EditCustomer=({getApi, idCredito, editModal, setEditModal, customer
                         </form>                   
                     </div>
             </div> 
-        
+            {subscripcion && <Subscripcion setSubscripcion={setSubscripcion} />}
+
         </>
 
     );

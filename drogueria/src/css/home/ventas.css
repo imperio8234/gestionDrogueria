@@ -5,22 +5,22 @@
 }
 
 .cont-ventasAdd{
-    height: 25%;
-    width: 100%;
+    height: 100%;
+    width: 50%;
     display: flex;
+    flex-direction: column;
     background: white;
 }
 
 
 .buscadorVenta{
-    width: 35%;
-    height: 100%;
+    width: 100%;
     background: rgba(210, 210, 210, 0.227);
 
 }
 
 .ventaEncontrada{
-    width: 65%;
+    width: 100%;
     height: 100%;
     background: rgba(210, 210, 210, 0.227);
 
@@ -39,7 +39,7 @@
 }
 .cont-list{
     width: 100%;
-    height:35%;
+    height:60%;
     background: rgba(210, 210, 210, 0.227);
 }
 
@@ -55,7 +55,6 @@
     background-color: rgba(210, 210, 210, 0.227);
     text-align: center;
     padding: 5px;   
-    cursor: pointer;
 }
 .add-list:hover{
     background:mediumseagreen;
@@ -102,7 +101,7 @@
 
 .actions-venta{
     height: 100%;
-    width: 40%;
+    width: 100%;
     background: white;
 }
 
@@ -112,9 +111,6 @@
     background: white;
 }
 
-.imgDecoder{
-   
-}
 
 .cont-lector{
     width: 50px;
@@ -171,10 +167,62 @@
     user-select: none;
 }
 
-@media (max-width: 600px) {
-    .cont-medio{
-        width: 70%;
-        height: 50%;
-    }
-    
+
+.productos{
+    font-size: 1vw;
+    white-space: nowrap;
 }
+
+.overf{
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    top: 0;
+    left: 0;
+    z-index: 1;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background: rgba(0, 0, 0, 0.131);
+}
+
+
+/*input */
+.search-input {
+    display: flex;
+    align-items: center;
+    border: 1px solid rgb(151, 151, 151);
+    padding: 5px;
+    border-radius: 20px;
+    background: white;
+  }
+  
+  .search-input input {
+    border: none;
+    outline: none;
+  }
+  
+  .search-input div {
+    margin-left: 10px;
+    color: rgb(204, 204, 204);
+    cursor: pointer;
+    
+  }
+ .cardVenta{
+    transition: all ease 300ms;
+    max-height: 38%;
+ }
+  .cardVenta:hover{
+    background-color:rgba(0, 0, 255, 0.217);
+  }
+      @media (max-width: 600px) {
+          .cont-medio{
+              width: 70%;
+              height: 50%;
+          }
+          .cardVenta{
+            transition: all ease 300ms;
+            max-height: 250px;
+         }
+          
+      }

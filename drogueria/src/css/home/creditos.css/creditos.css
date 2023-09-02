@@ -21,15 +21,61 @@
     align-items: center;
 }
 
-.contBotonMobil{
-    display: flex;
-    position: relative;
-    min-width: 30px;
-    flex-direction: column;
-    align-items: center;   
-}
 .contentDesk{
  display: none;
+}
+.contmobilbtn{
+    width: 100%;
+}
+
+.btnCreditos{
+    padding: 10px;
+    height: 40px;
+    width: 100%;
+    font-size: 1vw;
+
+}
+.btnCreditos:hover{
+        
+        height: 40px;
+        cursor: pointer;
+        background-color: #9f9f9faf;
+}
+
+
+@media (max-width: 700px) {
+    .contmobilbtn{
+        display: flex;
+        position: absolute;
+        flex-direction: column;
+        height: 270px;
+        
+        align-items: center;
+        justify-content: centers;
+        right: 10%;
+        width:auto;
+        box-shadow: 3px 2px 9px rgba(0, 0, 0, 0.262);
+    }
+    .contBotonMobil{
+        display: flex;
+        width: 70%;
+        position: absolute;
+        background: yellowgreen;
+    }
+    .btnCreditos{
+        height: 50px;
+        font-size: 1rem;
+    }
+
+    .btnCreditos:hover{
+        width: 100%;
+        height: 50px;
+        cursor: pointer;
+        background-color: #9f9f9faf;
+        border-radius: 0px 10px 10px 0px;
+    
+    }
+    
 }
 
 .btnDiseñoDesk{
@@ -61,10 +107,7 @@
 }
 
 /* configuracion botones */
-/*.historial{
-    display: flex;
-}
-*/
+
 .valorCred{
     width: 10%;
 }
@@ -98,7 +141,7 @@
    transition: all 300ms ease;
 }
 
-.contTable .botoneshis:hover, .btnGlob:hover, .delet:hover{
+.contTable .botoneshis:hover, .btnGlob:hover{
     background: crimson;
     border-radius: 10px;
     transform: scale(1.1);  
@@ -107,7 +150,7 @@
     
 }
 
-.contTable .botoneshisEdit:hover, .sumar:hover{
+.contTable .botoneshisEdit:hover{
     background:mediumseagreen;
     border-radius: 10px;
     transform: scale(1.1);  
@@ -116,42 +159,7 @@
     
 }
 
-/*contenedor historial */
 
-.historial:hover{
-    background:rgb(117, 117, 210);
-    border-radius: 10px;
-    transform: scale(1.1);  
-    cursor: pointer;
-    transition: all 100ms ease;
-    
-}
-
-.abonar:hover{
-    background:rgb(90, 179, 60);
-    border-radius: 10px;
-    transform: scale(1.1);  
-    cursor: pointer;
-    transition: all 100ms ease;
-}
-
-
-
-@media (max-width: 700px) {
-   
-    .historial:hover{
-    cursor: pointer;
-    background:none;
-    transform: scale(1.2);
-}
-
-.abonar:hover{
-    background: none;
-    transform: scale(1.5);
-}
-}
-
-/* menu historial config */
 
 .contentHistory{
     position: absolute;
@@ -291,17 +299,6 @@ padding-bottom: 10px;
 
        }   
        
-       .edit, .delet, .sumar, .abonar{
-        width: 25px;
-        height: 25px;
-        margin: auto;
-    }
-    
-    .edit:hover, .delet:hover:hover, .sumar:hover, .abonar:hover{
-        transform: scale(1.5);
-        background:none;
-    }
-
     .contentHistory{
         width: 100%;
         height: 50%;

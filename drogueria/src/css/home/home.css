@@ -20,3 +20,19 @@
 .scrollstyle::-webkit-scrollbar-thumb{
     background: rgba(0, 0, 0, 0.216);
 }
+
+.dias-prueba{
+    min-height: 30px;
+    width: 100%;
+    position: relative;
+    background: rgba(42, 135, 228, 0.58);
+    padding: 10px;
+    top: 0;
+    text-align: justify;
+    font-size: 1rem;
+    font-family: 'Times New Roman', Times, serif;
+    animation: 400ms ease ;
+    
+    
+}
+

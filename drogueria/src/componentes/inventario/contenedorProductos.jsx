@@ -46,15 +46,23 @@ export const ContentComponents=()=>{
         
         getApi();
     },[getpage]);
+
    async function getApi(){
     try {
-        await axios.get("http://localhost:2000/getproducts",)
+        await axios.get("http://localhost:2000/api/v1/productos/1",{withCredentials:true})
         .then(res=>{
-            setData(res.data.data);  
-            setPaginas(arrayConverter(res.data.paginas.paginas < 2 && 1));   
+            
+            setData(res.data.data.data);  
+            setPaginas(arrayConverter(res.data.data.paginas.paginas < 2 && 1)); 
         });
     } catch (error) {
         enqueueSnackbar(error, {variant:"error"})
+        if(error.response.status == 401){
+            alert("inicia sesion");
+            localStorage.removeItem("user");
+            location.reload();
+            
+        }
         
     }
         
@@ -63,15 +71,11 @@ export const ContentComponents=()=>{
    
    //delete product and edit product
 
-   function deleteOredit(e){
-    if(e.target.parentNode.parentNode.className == "delet"){ 
+   function deleteOredit(e, id){
+    const product = data.find(item => item.id_producto == id);
+    if(e == "delet"){ 
            //nombre del producto
-           const nombre=e.target
-       .parentNode
-       .parentNode
-       .parentNode
-       .querySelector(".texto")
-       .textContent;
+           const nombre=id
 
         Swal.fire({
             title:"desea eliminar el producto",
@@ -86,20 +90,21 @@ export const ContentComponents=()=>{
                 deleteProduct(nombre);
             }
         });     
-   }else if(e.target.parentNode.parentNode.className == "edit"){
+   }else if(e == "edit"){
     // names of the date to change  
-    const nombre=e.target.parentNode.parentNode.parentNode.cells[1].textContent;
-    const unidades=e.target.parentNode.parentNode.parentNode.cells[0].textContent;
-    const laboratorio=e.target.parentNode.parentNode.parentNode.cells[2].textContent;
-    const costo=e.target.parentNode.parentNode.parentNode.cells[3].textContent;
-    const precio=e.target.parentNode.parentNode.parentNode.cells[4].textContent;
+    const nombre=product.nombre;
+    const unidades=parseInt(product.unidades);
+    const laboratorio= product.laboratorio;
+    const costo= product.costo;
+    const precio= product.precio;
     //object
     const ProductToEdit={
         nombre:nombre,
         unidades:unidades,
         laboratorio:laboratorio,
         costo:costo,
-        precio:precio
+        precio:precio,
+        id_producto: id
     }
     //insert object to component
       setProductToEdit(ProductToEdit)
@@ -113,8 +118,9 @@ export const ContentComponents=()=>{
   } 
 //request api delete
 async function deleteProduct(producto){
+    console.log(producto)
     try {
-        axios.delete(`http://localhost:2000/deleteproduct/${producto}`)
+       await axios.delete(`http://localhost:2000/api/v1/productos/${producto}`, {withCredentials: true})
         .then(res=>{
             if(res.data.success){
                 enqueueSnackbar("se elimino correctamente",{variant:"success"})
@@ -152,6 +158,7 @@ async function deleteProduct(producto){
                 })
               } catch (error) {
                 enqueueSnackbar(error, {variant:"error"})
+                
               }
           }
 
@@ -203,8 +210,12 @@ async function deleteProduct(producto){
                                     <td>{item.laboratorio}</td>
                                     <td>{Separador(item.costo)}</td>
                                     <td>{Separador(item.precio)}</td>
-                                    <td onClick={(e)=>deleteOredit(e)} className="delet"><FontAwesomeIcon icon={faTrash} /></td>
-                                    <td onClick={(e)=>deleteOredit(e)} className="edit"><FontAwesomeIcon icon={faUserPen} /></td>
+                                    <td>
+                                        <div className="w-100 d-flex">
+                                            <div onClick={() => deleteOredit("edit", item.id_producto)} className="btn btnCreditos rounded text-dark"><FontAwesomeIcon icon={faUserPen} /></div>
+                                            <div onClick={() => deleteOredit("delet", item.id_producto)} className="btn btnCreditos rounded text-danger"><FontAwesomeIcon icon={faTrash} /></div>
+                                        </div>
+                                    </td>
                                     </tr>
                                 )
                             })

@@ -5,8 +5,6 @@ import { ModalRegister } from "./components/modalRegistroCredit";
 import axios from "axios"; 
 import {SnackbarProvider, enqueueSnackbar } from "notistack";
 import Swal from "sweetalert2";
-import { ClientTools} from "./components/clientTools";
-import {ClientToolsDesk} from "./components/clientToolsDesk";
 import "../../css/home/creditos.css/creditos.css";
 import { Historial } from "./components/historial";
 import { Filtro } from "./components/filtroCredit";
@@ -17,6 +15,7 @@ import { Pages } from "./components/compontsRecord/paginacion";
 import { BarInfo } from "./components/compontsRecord/infoBarr";
 import { arrayConverter } from "../../toolsDev/arrayConverter";
 import { Search } from "./components/browser";
+import { Botones } from "./BOTONES.JSX";
 
 //import { BarInfo } from "./barraInfo";
 //import { Separador } from "../../toolsDev/separacion";
@@ -57,6 +56,12 @@ export const ContentCredits=()=>{
       };
          
     }, []);
+    useEffect(() =>{
+      if (windowWidth >= 700) {
+        setElementoSeleccionado(null)
+      } 
+     },[windowWidth])
+      
 
     
 
@@ -69,8 +74,8 @@ export const ContentCredits=()=>{
 
    async function getApi(){
     try {
-        await axios.get(`http://localhost:2000/api/v1/creditos/1/${getpage}`,)
-        .then(res=>{             
+        await axios.get(`http://localhost:2000/api/v1/creditos/${getpage}`,{withCredentials:true})
+        .then(res=>{           
             if (res.data.success) {
               setData(res.data.data.data);
               setPaginas(arrayConverter(res.data.paginas.paginas < 2 && 1));
@@ -80,6 +85,12 @@ export const ContentCredits=()=>{
         });
     } catch (error) {
         enqueueSnackbar(error, {variant:"error"})
+        if(error.response.status == 401){
+          alert("inicia sesion");
+          localStorage.removeItem("user");
+          location.reload();
+          
+      }
         
     }
    }
@@ -101,7 +112,7 @@ export const ContentCredits=()=>{
             if (res.isConfirmed) {
 
               //delete product
-                deleteProduct(customerToEdit.nombre);
+                deleteProduct(customerToEdit.id_credito);
             }
         }); 
         
@@ -118,7 +129,7 @@ export const ContentCredits=()=>{
       }
 
       // events record      
-   }else if(e == "Historial"){
+   }else if(e == "historial"){
     showRecord?setShowRecord(false):setShowRecord(true);
     !showRecord && setShowAddRecord(false), setShowSubstractRecord(false);
    
@@ -136,7 +147,8 @@ export const ContentCredits=()=>{
     setIdCredito(id);
    }else if(e == "abonar") {
     showSubstractRecord?setShowSubstractRecord(false): setShowSubstractRecord(true);
-
+    setSendNameRecord(customerToEdit.nombre);
+    setIdCredito(id);
     !showSubstractRecord && setShowRecord(false), setShowAddRecord(false)
    } else {
     console.log("no hay botones que coincidan")
@@ -146,7 +158,6 @@ export const ContentCredits=()=>{
   
   //mostrar menu de botones del usuario registrado 
   function  showBtn(index, accion){
-    
     
     handlerClick(accion, index)
     setElementoSeleccionado(index)
@@ -159,7 +170,7 @@ export const ContentCredits=()=>{
 //request api delete
 async function deleteProduct(cliente){
     try {
-        axios.delete(`http://localhost:2000/deletecustomer/${cliente}`)
+        axios.delete(`http://localhost:2000/api/v1/creditos/${cliente}`,{withCredentials:true})
         .then(res=>{
             if(res.data.success){
                 enqueueSnackbar(`se elimino a ${cliente} correctamente`,{variant:"success"})
@@ -187,7 +198,7 @@ async function deleteProduct(cliente){
          async function filtrarProduct(e){
             const product=JSON.stringify(e);
               try {
-                await axios.get(`http://localhost:2000/getproducts/filtro/${product}`)
+                await axios.get(`http://localhost:2000/getproducts/filtro/${product}`,{withCredentials:true})
                 .then(res =>{
                     if (res.data.success) {
                         setData(res.data.data);
@@ -252,18 +263,8 @@ async function deleteProduct(cliente){
                     <td className="texto">{item.celular}</td>
                     <td>{item.fecha.split(" ")[0]}</td>
                     <td className="valorCred">{item.valor}</td>
+                    <td className="w-50" rowSpan={1}><FontAwesomeIcon onClick={() => showBtn(item.id_credito)} className={windowWidth <= 700 ?"tools": "d-none"} icon={elementoSeleccionado == item.id_deuda ? faPlus:faMinus  }/> {elementoSeleccionado == item.id_credito  ? <Botones handlerClick={handlerClick} item={item.id_credito} seleccionado={elementoSeleccionado} clase ={windowWidth <= 700 ?"d-none":"contBotonMobil"}/>: null}{windowWidth <= 700 ?null : <Botones item={item.id_credito} handlerClick={handlerClick} />}</td>     
 
-                     {/* menu para escritorio */}
-                    {windowWidth >= 700 && <ClientToolsDesk showBtn={showBtn} id={item.id_credito} faUserPen={faUserPen} handlerClick={handlerClick} faTrash={faTrash}  />}
-                   
-                    {/* menu para movil */}
-                    <td onClick={() => showBtn(item.id_credito) } className={windowWidth <= 700 ? 'contBotonMobil' : "contBotonMobil contentDesk"}>
-                        {windowWidth <= 700 && <td colSpan={3}><FontAwesomeIcon className="tools" icon={elementoSeleccionado !== item.id_credito ? faPlus : faMinus} /></td>}
-                        {windowWidth <= 700 && <td id="contBtnCredits" className={elementoSeleccionado === item.id_credito ? "btnCreditsUser" : "btnCreditsUser esconderbtnUser"}>
-                          <ClientTools faMinus={faMinus} faPlus={faPlus} windowWidth={windowWidth} faUserPen={faUserPen} faTrash={faTrash} handlerClick={handlerClick} />
-                </td>}
-                    </td>
-                    
                   </tr>
                 )
               })
@@ -280,7 +281,7 @@ async function deleteProduct(cliente){
         <AddRecord idCredito={idCredito} showAddRecord={showAddRecord} setShowAddRecord={setShowAddRecord} sendNameRecord={sendNameRecord} />
         <SubstractRecord idCredito={idCredito} showSubstractRecord={showSubstractRecord} setShowSubstractRecord={setShowSubstractRecord} sendNameRecord={sendNameRecord}></SubstractRecord>
       </div>
-      <Pages setGetPage={setGetPage} paginas={paginas}/>
+      {/*<Pages setGetPage={setGetPage} paginas={paginas}/>*/}
       <BarInfo></BarInfo>
     </div>
 

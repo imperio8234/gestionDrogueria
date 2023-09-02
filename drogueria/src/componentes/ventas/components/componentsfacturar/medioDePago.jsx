@@ -1,3 +1,4 @@
+// eslint-disable-next-line react/prop-types
 export const MedioPago= ({setEfectivo, close}) => {
     return (
         <div className="cont-medio bg-white">
@@ -7,9 +8,13 @@ export const MedioPago= ({setEfectivo, close}) => {
                 </div>
             <div className="cont-efectivo h-75 d-flex justify-content-center align-items-center">
                 
-                <div onClick={() => setEfectivo(true)} className="pointer imagen-efectivo border border-dark-subtle  p-3">
+                <div onClick={() => setEfectivo("efectivo")} className="pointer imagen-efectivo border border-dark-subtle  p-3">
                     <img className="" title="efectivo" src="../../../../public/imagenes/icons8-dinero-96.png" alt="efectivo" />
                     <p>Efectivo</p>
+                </div>
+                <div onClick={() => setEfectivo("credito")} className="pointer imagen-efectivo border border-dark-subtle  p-3">
+                    <img className="" title="efectivo" src="../../../../public/imagenes/icons8-dinero-96.png" alt="efectivo" />
+                    <p>credito</p>
                 </div>
             </div>
         </div>

@@ -1,10 +1,11 @@
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faXmark } from "@fortawesome/free-solid-svg-icons";
+import { faTrashCan, faUserPen, faXmark } from "@fortawesome/free-solid-svg-icons";
 import { useState } from "react";
 import { useEffect } from "react";
 import axios from "axios";
 import { enqueueSnackbar } from "notistack";
 import { Separador } from "../../../toolsDev/separacion";
+import Swal from "sweetalert2";
 
 // eslint-disable-next-line react/prop-types
 export const Historial=({showRecord, setShowRecord, sendNameRecord, idCredito})=>{
@@ -18,11 +19,11 @@ export const Historial=({showRecord, setShowRecord, sendNameRecord, idCredito})=
     const [debe, setDebe] = useState(0);   
    
     // get record
-    useEffect(()=>{
+    
 
         async function askToApi() {
             try {
-                 await axios.get(`http://localhost:2000/api/v1/addcredit-record/${idCredito}/1`)
+                 await axios.get(`http://localhost:2000/api/v1/addcredit-record/${idCredito}/1`, {withCredentials: true})
                  .then(e => {
                     if (e.data.success) {
                         setGetRecord(e.data.data)
@@ -33,19 +34,17 @@ export const Historial=({showRecord, setShowRecord, sendNameRecord, idCredito})=
         
             } catch (err) {
                   if (err) {
-                   // enqueueSnackbar(err, {variant: "error"})
+                    enqueueSnackbar(err, {variant: "error"});
                   }
                     
             }
            }   
-            askToApi();
-            getAbonos()
+            
 
            async function getAbonos(){
                 try {
-                    await axios.get(`http://localhost:2000/api/v1/substractcredit-record/${idCredito}/1`)
+                    await axios.get(`http://localhost:2000/api/v1/substractcredit-record/${idCredito}/1`, {withCredentials: true})
                     .then(e => {
-                        
                         if (e.data.success) {
                             setAbonos(e.data.data.data);                                                       
                         } else {
@@ -54,14 +53,17 @@ export const Historial=({showRecord, setShowRecord, sendNameRecord, idCredito})=
                     })
                 } catch (error) {
                     if (error) {
-                        enqueueSnackbar(error, {variant: "error"})                        
+                        enqueueSnackbar(error, {variant: "error"});                      
                     }
                     
                 }
             }
           
-       
+     useEffect(()=>{
+            askToApi();
+            getAbonos();
     }, [idCredito]);
+    // peticiones
 
     useEffect(() => {
         valorTotal()
@@ -77,7 +79,37 @@ export const Historial=({showRecord, setShowRecord, sendNameRecord, idCredito})=
     setDebe(sumaAbonos - sumaNuevos);
     }
 
+    const deleteItem = async (url) => {
+       Swal.fire({
+        title:`desea eliminar a el registro`,
+        icon:"warning",
+        showCancelButton:true,
+        confirmButtonColor:'#3085d6',
+        cancelButtonColor:'#d33',
+        confirmButtonText:'eliminar registro'
+       }).then( async res =>  {
+        if (res.isConfirmed) {
+            try {
+                const res = await fetch(url, {
+                    method: "DELETE",
+                    credentials: "include",
+                    headers: {
+                        "content-type": "application/json"
+                    }
+                });
+                const resultado = await res.json();
+                if (resultado.success) {
+                    enqueueSnackbar(resultado.message, {variant: "success"})
+                    askToApi();
+                    getAbonos();
+                }
+            } catch (error) {
+                enqueueSnackbar("error", {variant: "error"})
+            }  
+        } 
+       })
 
+    }
 
         return(
         <div className="contentHistory d-flex flex-column">
@@ -112,8 +144,13 @@ export const Historial=({showRecord, setShowRecord, sendNameRecord, idCredito})=
                                 <tr key={index} className="bg-dark">
                             <td>{item.fecha}</td>
                             <td>{item.valor}</td>
-                            <td className="botoneshisEdit">editar</td>
-                            <td className="botoneshis">eliminar</td>
+                            <td>
+                                <div className="w-100 d-flex">
+                                <div className="btn btnCreditos rounded text-primary"><FontAwesomeIcon icon={faUserPen}/></div>
+                                <div onClick={() => deleteItem(`http://localhost:2000/api/v1/substractcredit-record/${item.id_abono}`)} className="btn btnCreditos rounded text-danger"><FontAwesomeIcon icon={faTrashCan}/></div>
+                                
+                               </div>
+                            </td>
                         </tr>
                             ) 
                         })
@@ -144,8 +181,13 @@ export const Historial=({showRecord, setShowRecord, sendNameRecord, idCredito})=
                                     <td>{item.fecha}</td>
                                     <td>{item.producto}</td>
                                     <td>{item.valor}</td>
-                                    <td className="botoneshisEdit">editar</td>
-                                    <td className="botoneshis">eliminar</td>
+                                    <td>
+                                       <div className="w-100 d-flex">
+                                          <div className="btn btnCreditos rounded text-primary"><FontAwesomeIcon icon={faUserPen}/></div>
+                                          <div onClick={() => deleteItem(`http://localhost:2000/api/v1/addcredit-record/${item.id_suma}`)} className="btn btnCreditos rounded text-danger"><FontAwesomeIcon icon={faTrashCan}/></div>
+                                
+                                       </div>
+                                    </td>
                                 </tr>
 
                             )

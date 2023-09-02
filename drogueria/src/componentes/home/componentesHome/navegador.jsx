@@ -7,8 +7,8 @@ export const Navegador=({ changeColorBtn })=>{
         <>
             <Link onClick={(e) =>changeColorBtn(e)} className="metrica span btnChangeclic" to={"/"}>metrica</Link>
             <Link onClick={(e) => changeColorBtn(e)} className="inventario span btnChangeclic" to={"/inventario"}>inventario</Link>
-            <Link onClick={(e) => changeColorBtn(e)} className="creditos span btnChangeclic" to={"/creditos"}>creditos</Link>
-            <Link onClick={(e) => changeColorBtn(e)} className="deudas span btnChangeclic"to={"/deudas"}>deudas</Link>
+            <Link onClick={(e) => changeColorBtn(e)} className="creditos span btnChangeclic" to={"/creditos"}>cuentas por cobrar</Link>
+            <Link onClick={(e) => changeColorBtn(e)} className="deudas span btnChangeclic"to={"/deudas"}>cuentas por pagar </Link>
             <Link onClick={(e) => changeColorBtn(e)} className="ventas span btnChangeclic"to={"/ventas"}>ventas</Link>
         </>
     );

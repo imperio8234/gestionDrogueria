@@ -8,6 +8,24 @@ export const Filtro=({filtro, filtrarProduct})=>{
     const [valor, setValor]=useState("");
 
                 // variables para 
+                const [startDate, setStartDate] = useState('');
+  const [debtAmount, setDebtAmount] = useState('');
+
+  const handleStartDateChange = (event) => {
+    setStartDate(event.target.value);
+  };
+
+  const handleDebtAmountChange = (event) => {
+    setDebtAmount(event.target.value);
+  };
+
+  const handleFilterClick = () => {
+    const filters = {
+      startDate,
+      debtAmount,
+    };
+    handleFilter(filters);
+  };
         
       const CheckPrecio=document.getElementById("checkPrecio");
       const checkCantidad=document.getElementById("checkCantidad");
@@ -38,39 +56,37 @@ export const Filtro=({filtro, filtrarProduct})=>{
 
     return(
         <>
-          <div className={filtro?"menuFiltrar":"menuFiltrar esconderMenuFiltrar"}>
-                        <div className="tipoDeFiltro">
-                            <div className="precioFiltro">
-                                
-                                <input onChange={()=>CheckPrecio.checked? checkCantidad.checked = false:""} className="form-check-input" type="checkbox" role="switch" id="checkPrecio"/>
-                                <label className="form-check-label" htmlFor="flexSwitchCheckDefault"></label>
-                              
-                                <label  htmlFor="precio">precio de 0 a
-                                    <select onClick={(e)=>setValor(e.target.value)} name="precio" id="precio">
-                                       <option  value=""></option>
-                                       <option  value="2000">2.000</option>
-                                       <option value="5000">5.000</option>
-                                       <option value="1000">1.000</option>
-                                       <option value="15000">15.000</option>
-                                     </select>
-                                 </label>
-                            </div>
-                            <div className="cantidadFiltro">
-                                <input onChange={()=>checkCantidad.checked? CheckPrecio.checked = false:""} className="form-check-input" type="checkbox" role="switch" id="checkCantidad"/>
-                                <label className="form-check-label" htmlFor="flexSwitchCheckDefault"></label>
-                                <label htmlFor="cantidad"> cantidad de 0 a 
-                                    <select onInput={(e)=>setCantidad(e.target.value)} name="cantidad"  id="cantidad">
-                                        <option value=""></option>
-                                        <option value="2">2</option>
-                                        <option value="4">4</option>
-                                        <option value="6">6</option>
-                                        <option value="8">8</option>
-                                        <option value="15">15</option>
-                                    </select>
-                                </label>
-                            </div>
-                        </div>
-                            <input onClick={filtrarCantidad} className="btn btn-primary " type="button" value="filtrar" id="botonFiltrar"/>
+          <div className={filtro?"menuFiltrar card position-absolute":"menuFiltrar esconderMenuFiltrar"}>
+          <div className="row d-flex flex-column align-items-center">
+        <div className="col-md-4 w-100">
+          <label htmlFor="startDate">Fecha de inicio:</label>
+          <input
+            type="date"
+            id="startDate"
+            className="form-control"
+            value={startDate}
+            onChange={handleStartDateChange}
+          />
+        </div>
+        <div className="col-md-4 w-100">
+          <label htmlFor="debtAmount">Cantidad de deuda:</label>
+          <input
+            type="number"
+            id="debtAmount"
+            className="form-control"
+            value={debtAmount}
+            onChange={handleDebtAmountChange}
+          />
+        </div>
+        <div className="col-md-4 mt-4">
+          <button
+            className="btn btn-primary"
+            onClick={handleFilterClick}
+          >
+            Filtrar
+          </button>
+        </div>
+      </div>
                     </div>
         </>
 

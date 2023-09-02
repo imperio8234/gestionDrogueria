@@ -22,7 +22,7 @@ export const Historial=({showRecord, setShowRecord, sendNameRecord, idCredito})=
 
         async function askToApi() {
             try {
-                 await axios.get(`http://localhost:2000/api/v1/addcredit-record/${idCredito}/1`)
+                 await axios.get(`http://localhost:2000/api/v1/addcredit-record/${idCredito}/1`, {withCredentials: true})
                  .then(e => {
                     if (e.data.success) {
                         setGetRecord(e.data.data)
@@ -43,7 +43,7 @@ export const Historial=({showRecord, setShowRecord, sendNameRecord, idCredito})=
 
            async function getAbonos(){
                 try {
-                    await axios.get(`http://localhost:2000/api/v1/substractcredit-record/${idCredito}/1`)
+                    await axios.get(`http://localhost:2000/api/v1/substractcredit-record/${idCredito}/1`, {withCredentials: true})
                     .then(e => {
                         
                         if (e.data.success) {
